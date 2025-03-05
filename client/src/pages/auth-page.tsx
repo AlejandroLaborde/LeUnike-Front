@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Redirect } from "wouter";
 
@@ -46,7 +53,10 @@ export default function AuthPage() {
       <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Le Unike Admin Portal</CardTitle>
+            <div className="flex items-center gap-3">
+              <img src="/leunike-logo.jpg" alt="Le Unike Logo" className="h-10 w-10 rounded-full" />
+              <CardTitle className="text-2xl">Le Unike Admin Portal</CardTitle>
+            </div>
             <CardDescription>
               Manage your products, vendors and track sales
             </CardDescription>
@@ -93,7 +103,18 @@ export default function AuthPage() {
                     </div>
                     <div>
                       <Label htmlFor="role">Role</Label>
-                      <Input {...registerForm.register("role")} />
+                      <Select 
+                        defaultValue={registerForm.getValues("role")}
+                        onValueChange={(value) => registerForm.setValue("role", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vendor">Vendor</SelectItem>
+                          <SelectItem value="admin">Administrator</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <Button
                       type="submit"

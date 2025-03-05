@@ -11,6 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -21,11 +28,36 @@ import { Loader2 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { OrderForm } from "@/components/order/order-form";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Orders() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const { data: orders, isLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
+  });
+
+  const createOrderMutation = useMutation({
+    mutationFn: async (data) => {
+      const res = await apiRequest("POST", "/api/orders", data);
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({ title: "Order created successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to create order", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
   });
 
   const updateStatusMutation = useMutation({
@@ -42,9 +74,28 @@ export default function Orders() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Orders</h1>
-          <p className="text-muted-foreground">Track and manage customer orders</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Orders</h1>
+            <p className="text-muted-foreground">Track and manage customer orders</p>
+          </div>
+
+          {user?.role === "vendor" && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Create Order</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Order</DialogTitle>
+                </DialogHeader>
+                <OrderForm 
+                  onSubmit={(data) => createOrderMutation.mutate(data)}
+                  isSubmitting={createOrderMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {isLoading ? (
