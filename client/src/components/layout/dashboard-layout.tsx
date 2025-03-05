@@ -66,6 +66,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
 
+      {/* Header con logo */}
+      <div className="w-full border-b bg-white p-4">
+        <div className="container flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img 
+              src="/src/assets/logo.jpg" 
+              alt="Le Unike" 
+              className="h-10 w-10 rounded-full object-cover"
+            />
+            <span className="font-bold text-xl text-frozen-dark">Le Unike</span>
+          </div>
+        </div>
+      </div>
+      
       {/* Main content */}
       <div className="flex-1 min-h-screen bg-background">
         <main className="p-8">{children}</main>
