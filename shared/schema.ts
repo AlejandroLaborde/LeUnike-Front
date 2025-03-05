@@ -41,17 +41,29 @@ export const orderItems = pgTable("order_items", {
   price: decimal("price").notNull(),
 });
 
-// Insert Schemas
+// Modified Insert Schemas to handle numeric types
+export const insertProductSchema = createInsertSchema(products).extend({
+  price: z.number().or(z.string()).transform(val => val.toString()),
+  stock: z.number().int(),
+});
+
+export const insertVendorSchema = createInsertSchema(vendors).extend({
+  commission: z.number().or(z.string()).transform(val => val.toString()),
+});
+
+export const insertOrderSchema = createInsertSchema(orders).extend({
+  total: z.number().or(z.string()).transform(val => val.toString()),
+});
+
+export const insertOrderItemSchema = createInsertSchema(orderItems).extend({
+  price: z.number().or(z.string()).transform(val => val.toString()),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   role: true,
 });
-
-export const insertProductSchema = createInsertSchema(products);
-export const insertVendorSchema = createInsertSchema(vendors);
-export const insertOrderSchema = createInsertSchema(orders);
-export const insertOrderItemSchema = createInsertSchema(orderItems);
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
