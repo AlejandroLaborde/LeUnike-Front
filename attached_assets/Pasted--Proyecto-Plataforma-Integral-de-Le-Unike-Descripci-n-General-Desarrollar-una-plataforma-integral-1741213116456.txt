@@ -1,0 +1,53 @@
+📌 Proyecto: Plataforma Integral de Le Unike
+Descripción General
+Desarrollar una plataforma integral para Le Unike, compuesta por:
+
+Chatbot en WhatsApp (ya implementado) utilizando whatsapp-web.js, que automatiza respuestas, gestiona pedidos y deriva clientes a los vendedores.
+Plataforma Web en Angular para administración de productos, stock, ventas y métricas.
+Gestión de Vendedores con acceso controlado a clientes y pedidos.
+Sistema de Reportes y Comisiones para medir el rendimiento de cada vendedor.
+Acceso al Código QR de WhatsApp en la plataforma para que el administrador pueda iniciar sesión con whatsapp-web.js.
+🛠️ Tecnologías a Utilizar
+Frontend: Angular con Material UI
+Backend: Node.js con Express.js (API ya implementada)
+Base de Datos: MongoDB
+Integración con WhatsApp: whatsapp-web.js
+Hosting: Replit (para desarrollo), Vercel/Railway/AWS para producción
+📌 Módulos del Proyecto
+1️⃣ Integración con el Chatbot Existente
+Conectar la plataforma Angular con la API del chatbot (whatsapp-web.js).
+Consumir los endpoints definidos en Swagger para obtener chats, pedidos y usuarios.
+Implementar autenticación de vendedores para restringir accesos.
+2️⃣ Plataforma Web Administrativa (Angular)
+🔹 Módulo de Gestión de Productos y Stock
+Tabla interactiva para visualizar y modificar stock en tiempo real.
+Opciones para crear, editar y eliminar productos.
+Conexión con la API para reflejar cambios automáticamente.
+🔹 Módulo de Ventas y Pedidos
+Listado de pedidos abiertos y cerrados.
+Permitir asignación de ventas a vendedores.
+Registro de pagos y estado de pago.
+🔹 Módulo de Gestión de Vendedores
+Listado de vendedores con sus zonas.
+Acceso restringido: Cada vendedor solo ve sus clientes y ventas.
+Cálculo de comisiones basado en ventas.
+🔹 Módulo de Reportes y Comisiones
+📊 Dashboard con estadísticas en Angular:
+Productos más vendidos.
+Ventas por vendedor con cálculo de comisiones.
+Estadísticas de ingresos (diarios/semanales/mensuales).
+3️⃣ Página Informativa Pública
+Presentación del negocio.
+Galería de productos y flyers.
+Formulario de suscripción a WhatsApp.
+Botón flotante de contacto con el chatbot.
+4️⃣ Acceso al Código QR de WhatsApp
+Endpoint en la API para obtener el código QR (whatsapp-web.js).
+Sección en la plataforma para que el administrador vea y escanee el código.
+Estado de conexión de WhatsApp (conectado/desconectado).
+Opción para reiniciar sesión si es necesario.
+📌 Consideraciones Finales
+✅ Desarrollo en Angular con Material UI para una mejor experiencia de usuario.
+✅ Almacenamiento de datos en MongoDB (stock, pedidos, clientes y métricas).
+✅ Autenticación de usuarios en la plataforma con roles (Admin, Vendedor).
+✅ Seguridad y control de acceso para evitar modificaciones no autorizadas.
