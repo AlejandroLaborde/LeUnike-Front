@@ -113,20 +113,10 @@ export default function AuthPage() {
         <div className="h-full flex items-center justify-center p-8">
           <div className="max-w-lg">
             <h1 className="text-4xl font-bold mb-4">Welcome to Le Unike</h1>
-            <div className="flex justify-center mb-6">
-              <div className="flex flex-col items-center">
-                <img 
-                  src="/src/assets/logo.jpg" 
-                  alt="Le Unike" 
-                  className="h-24 w-24 rounded-full object-cover mb-2"
-                />
-                <h2 className="text-2xl font-bold text-frozen-dark">Le Unike</h2>
-                <span className="text-sm text-muted-foreground">ALIMENTOS GOURMET</span>
-              </div>
-            </div>
             <p className="text-lg text-muted-foreground">
-              Su plataforma integral para gestionar productos, realizar seguimiento de ventas y
-              coordinar con proveedores - todo integrado con WhatsApp para una comunicación fluida.
+              Your comprehensive platform for managing products, tracking sales, and
+              coordinating with vendors - all integrated with WhatsApp for seamless
+              communication.
             </p>
           </div>
         </div>
