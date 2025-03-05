@@ -1,0 +1,30 @@
+
+:root {
+  /* Colores principales para empresa de congelados */
+  --frozen-light: hsl(195, 73%, 90%);
+  --frozen-main: hsl(195, 73%, 59%);
+  --frozen-dark: hsl(195, 73%, 30%);
+  --frozen-accent: hsl(210, 100%, 66%);
+  --frozen-muted: hsl(200, 30%, 96%);
+  
+  /* Actualizar variables existentes */
+  --primary: 195 73% 59%;
+  --secondary: 210 100% 66%;
+  --accent: 200 80% 75%;
+  --muted: 200 30% 96%;
+  
+  /* Colores para gráficos */
+  --chart-1: 195 73% 59%;
+  --chart-2: 210 100% 66%;
+  --chart-3: 200 80% 75%;
+  --chart-4: 185 60% 70%;
+  --chart-5: 220 70% 80%;
+}
+
+/* Clases de utilidad */
+.bg-frozen-light { background-color: var(--frozen-light); }
+.bg-frozen-main { background-color: var(--frozen-main); }
+.bg-frozen-dark { background-color: var(--frozen-dark); }
+.text-frozen-light { color: var(--frozen-light); }
+.text-frozen-main { color: var(--frozen-main); }
+.text-frozen-dark { color: var(--frozen-dark); }
