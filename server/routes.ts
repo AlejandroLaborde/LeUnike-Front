@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertProductSchema, insertVendorSchema, insertOrderSchema } from "@shared/schema";
+import { insertProductSchema, insertVendorSchema, insertOrderSchema, insertCustomerSchema, insertVendorCustomerSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -39,6 +39,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendor = insertVendorSchema.parse(req.body);
     const created = await storage.createVendor(vendor);
     res.status(201).json(created);
+  });
+
+  // Customer routes
+  app.get("/api/customers", async (_req, res) => {
+    const customers = await storage.getCustomers();
+    res.json(customers);
+  });
+
+  app.post("/api/customers", async (req, res) => {
+    const customer = insertCustomerSchema.parse(req.body);
+    const created = await storage.createCustomer(customer);
+    res.status(201).json(created);
+  });
+
+  app.patch("/api/customers/:id", async (req, res) => {
+    const customer = await storage.updateCustomer(parseInt(req.params.id), req.body);
+    res.json(customer);
+  });
+
+  app.delete("/api/customers/:id", async (req, res) => {
+    await storage.deleteCustomer(parseInt(req.params.id));
+    res.sendStatus(204);
+  });
+
+  // Vendor-Customer Association routes
+  app.get("/api/vendors/:id/customers", async (req, res) => {
+    const vendorCustomers = await storage.getVendorCustomers(parseInt(req.params.id));
+    res.json(vendorCustomers);
+  });
+
+  app.post("/api/vendors/:id/customers", async (req, res) => {
+    const assignment = insertVendorCustomerSchema.parse({
+      ...req.body,
+      vendorId: parseInt(req.params.id),
+    });
+    const created = await storage.assignCustomerToVendor(assignment);
+    res.status(201).json(created);
+  });
+
+  app.delete("/api/vendors/:id/customers/:customerId", async (req, res) => {
+    await storage.unassignCustomerFromVendor(
+      parseInt(req.params.id),
+      parseInt(req.params.customerId)
+    );
+    res.sendStatus(204);
   });
 
   // Order routes

@@ -25,6 +25,21 @@ export const vendors = pgTable("vendors", {
   commission: decimal("commission").notNull().default("0.1"),
 });
 
+export const customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  address: text("address").notNull(),
+});
+
+export const vendorCustomers = pgTable("vendor_customers", {
+  id: serial("id").primaryKey(),
+  vendorId: integer("vendor_id").notNull(),
+  customerId: integer("customer_id").notNull(),
+  assignedAt: timestamp("assigned_at").defaultNow(),
+});
+
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   vendorId: integer("vendor_id").notNull(),
@@ -65,15 +80,22 @@ export const insertUserSchema = createInsertSchema(users).pick({
   role: true,
 });
 
+export const insertCustomerSchema = createInsertSchema(customers);
+export const insertVendorCustomerSchema = createInsertSchema(vendorCustomers);
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type InsertVendor = z.infer<typeof insertVendorSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type InsertVendorCustomer = z.infer<typeof insertVendorCustomerSchema>;
 
 export type User = typeof users.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Vendor = typeof vendors.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof orderItems.$inferSelect;
+export type Customer = typeof customers.$inferSelect;
+export type VendorCustomer = typeof vendorCustomers.$inferSelect;

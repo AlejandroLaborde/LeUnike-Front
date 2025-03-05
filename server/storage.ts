@@ -1,4 +1,4 @@
-import { User, Product, Vendor, Order, OrderItem, InsertUser, InsertProduct, InsertVendor, InsertOrder, InsertOrderItem } from "@shared/schema";
+import { User, Product, Vendor, Order, OrderItem, Customer, VendorCustomer, InsertUser, InsertProduct, InsertVendor, InsertOrder, InsertOrderItem, InsertCustomer, InsertVendorCustomer } from "@shared/schema";
 import createMemoryStore from "memorystore";
 import session from "express-session";
 
@@ -21,6 +21,20 @@ export interface IStorage {
   getVendors(): Promise<Vendor[]>;
   getVendor(id: number): Promise<Vendor | undefined>;
   createVendor(vendor: InsertVendor): Promise<Vendor>;
+  updateVendor(id: number, vendor: Partial<Vendor>): Promise<Vendor>;
+  deleteVendor(id: number): Promise<void>;
+
+  // Customer operations
+  getCustomers(): Promise<Customer[]>;
+  getCustomer(id: number): Promise<Customer | undefined>;
+  createCustomer(customer: InsertCustomer): Promise<Customer>;
+  updateCustomer(id: number, customer: Partial<Customer>): Promise<Customer>;
+  deleteCustomer(id: number): Promise<void>;
+
+  // Vendor-Customer operations
+  getVendorCustomers(vendorId: number): Promise<VendorCustomer[]>;
+  assignCustomerToVendor(assignment: InsertVendorCustomer): Promise<VendorCustomer>;
+  unassignCustomerFromVendor(vendorId: number, customerId: number): Promise<void>;
 
   // Order operations
   getOrders(): Promise<Order[]>;
@@ -38,6 +52,8 @@ export class MemStorage implements IStorage {
   private vendors: Map<number, Vendor>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
+  private customers: Map<number, Customer>;
+  private vendorCustomers: Map<number, VendorCustomer>;
 
   public sessionStore: session.Store;
   private currentId: number;
@@ -48,6 +64,8 @@ export class MemStorage implements IStorage {
     this.vendors = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.customers = new Map();
+    this.vendorCustomers = new Map();
     this.currentId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
@@ -130,6 +148,75 @@ export class MemStorage implements IStorage {
     };
     this.vendors.set(id, newVendor);
     return newVendor;
+  }
+
+  async updateVendor(id: number, updates: Partial<Vendor>): Promise<Vendor> {
+    const existing = await this.getVendor(id);
+    if (!existing) throw new Error("Vendor not found");
+
+    const updated = { ...existing, ...updates };
+    this.vendors.set(id, updated);
+    return updated;
+  }
+
+  async deleteVendor(id: number): Promise<void> {
+    this.vendors.delete(id);
+  }
+
+  // Customer operations
+  async getCustomers(): Promise<Customer[]> {
+    return Array.from(this.customers.values());
+  }
+
+  async getCustomer(id: number): Promise<Customer | undefined> {
+    return this.customers.get(id);
+  }
+
+  async createCustomer(customer: InsertCustomer): Promise<Customer> {
+    const id = this.currentId++;
+    const newCustomer = { ...customer, id };
+    this.customers.set(id, newCustomer);
+    return newCustomer;
+  }
+
+  async updateCustomer(id: number, updates: Partial<Customer>): Promise<Customer> {
+    const existing = await this.getCustomer(id);
+    if (!existing) throw new Error("Customer not found");
+
+    const updated = { ...existing, ...updates };
+    this.customers.set(id, updated);
+    return updated;
+  }
+
+  async deleteCustomer(id: number): Promise<void> {
+    this.customers.delete(id);
+  }
+
+  // Vendor-Customer operations
+  async getVendorCustomers(vendorId: number): Promise<VendorCustomer[]> {
+    return Array.from(this.vendorCustomers.values()).filter(
+      (vc) => vc.vendorId === vendorId
+    );
+  }
+
+  async assignCustomerToVendor(assignment: InsertVendorCustomer): Promise<VendorCustomer> {
+    const id = this.currentId++;
+    const newAssignment = { 
+      ...assignment,
+      id,
+      assignedAt: new Date(),
+    };
+    this.vendorCustomers.set(id, newAssignment);
+    return newAssignment;
+  }
+
+  async unassignCustomerFromVendor(vendorId: number, customerId: number): Promise<void> {
+    const assignment = Array.from(this.vendorCustomers.values()).find(
+      (vc) => vc.vendorId === vendorId && vc.customerId === customerId
+    );
+    if (assignment) {
+      this.vendorCustomers.delete(assignment.id);
+    }
   }
 
   // Order operations
