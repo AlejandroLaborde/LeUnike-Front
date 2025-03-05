@@ -86,6 +86,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendStatus(204);
   });
 
+  // Add this new endpoint to fetch all vendor-customer relationships
+  app.get("/api/vendor-customers", async (_req, res) => {
+    const vendors = await storage.getVendors();
+    const allRelationships: any[] = []; // Assuming VendorCustomer type is available
+
+    for (const vendor of vendors) {
+      const relationships = await storage.getVendorCustomers(vendor.id);
+      allRelationships.push(...relationships);
+    }
+
+    res.json(allRelationships);
+  });
+
+
   // Order routes
   app.get("/api/orders", async (_req, res) => {
     const orders = await storage.getOrders();
