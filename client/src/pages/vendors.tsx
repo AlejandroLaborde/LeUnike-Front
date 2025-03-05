@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Loader2 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { type InsertVendor } from "@shared/schema";
 
 export default function Vendors() {
   const { toast } = useToast();
@@ -31,19 +32,22 @@ export default function Vendors() {
     queryKey: ["/api/vendors"],
   });
 
-  const form = useForm({
+  const form = useForm<InsertVendor>({
     resolver: zodResolver(insertVendorSchema),
     defaultValues: {
       name: "",
       zone: "",
-      commission: 0.1,
+      commission: "0.1", 
       userId: 0,
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: Vendor) => {
-      const res = await apiRequest("POST", "/api/vendors", data);
+    mutationFn: async (data: InsertVendor) => {
+      const res = await apiRequest("POST", "/api/vendors", {
+        ...data,
+        commission: data.commission.toString(), 
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -128,7 +132,7 @@ export default function Vendors() {
                 <TableRow key={vendor.id}>
                   <TableCell>{vendor.name}</TableCell>
                   <TableCell>{vendor.zone}</TableCell>
-                  <TableCell>{(vendor.commission * 100).toFixed(1)}%</TableCell>
+                  <TableCell>{(parseFloat(vendor.commission) * 100).toFixed(1)}%</TableCell>
                   <TableCell>$0.00</TableCell>
                 </TableRow>
               ))}

@@ -68,7 +68,7 @@ export default function Orders() {
                 <TableRow key={order.id}>
                   <TableCell>#{order.id}</TableCell>
                   <TableCell>
-                    {format(new Date(order.createdAt), "MMM d, yyyy")}
+                    {order.createdAt ? format(new Date(order.createdAt), "MMM d, yyyy") : "N/A"}
                   </TableCell>
                   <TableCell>Vendor {order.vendorId}</TableCell>
                   <TableCell>${order.total}</TableCell>

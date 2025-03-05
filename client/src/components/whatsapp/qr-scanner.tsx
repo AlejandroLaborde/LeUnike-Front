@@ -2,12 +2,20 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
 
+interface WhatsAppStatus {
+  connected: boolean;
+}
+
+interface WhatsAppQR {
+  qrCode: string;
+}
+
 export function WhatsAppQRScanner() {
-  const { data: qrCode, refetch, isLoading } = useQuery({
+  const { data: qrCode, refetch, isLoading } = useQuery<WhatsAppQR>({
     queryKey: ["/api/whatsapp/qr"],
   });
 
-  const { data: status } = useQuery({
+  const { data: status } = useQuery<WhatsAppStatus>({
     queryKey: ["/api/whatsapp/status"],
   });
 
@@ -24,10 +32,10 @@ export function WhatsAppQRScanner() {
         </span>
       </div>
 
-      {!status?.connected && qrCode && (
+      {!status?.connected && qrCode?.qrCode && (
         <div className="flex justify-center">
           <img
-            src={`data:image/png;base64,${qrCode}`}
+            src={`data:image/png;base64,${qrCode.qrCode}`}
             alt="WhatsApp QR Code"
             className="max-w-[200px]"
           />

@@ -67,7 +67,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
-    const user = { ...insertUser, id };
+    const user = { 
+      ...insertUser,
+      id,
+      role: insertUser.role || "vendor" 
+    };
     this.users.set(id, user);
     return user;
   }
@@ -83,7 +87,12 @@ export class MemStorage implements IStorage {
 
   async createProduct(product: InsertProduct): Promise<Product> {
     const id = this.currentId++;
-    const newProduct = { ...product, id };
+    const newProduct = { 
+      ...product,
+      id,
+      stock: product.stock ?? 0, 
+      price: product.price.toString() 
+    };
     this.products.set(id, newProduct);
     return newProduct;
   }
@@ -112,7 +121,12 @@ export class MemStorage implements IStorage {
 
   async createVendor(vendor: InsertVendor): Promise<Vendor> {
     const id = this.currentId++;
-    const newVendor = { ...vendor, id };
+    const newVendor = { 
+      ...vendor,
+      id,
+      commission: vendor.commission?.toString() || "0.1", 
+      zone: vendor.zone || null 
+    };
     this.vendors.set(id, newVendor);
     return newVendor;
   }
@@ -128,7 +142,13 @@ export class MemStorage implements IStorage {
 
   async createOrder(order: InsertOrder): Promise<Order> {
     const id = this.currentId++;
-    const newOrder = { ...order, id };
+    const newOrder = { 
+      ...order,
+      id,
+      status: order.status || "pending", 
+      createdAt: order.createdAt || new Date(), 
+      total: order.total.toString() 
+    };
     this.orders.set(id, newOrder);
     return newOrder;
   }

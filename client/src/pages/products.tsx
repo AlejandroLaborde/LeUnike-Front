@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, type Product } from "@shared/schema";
+import { insertProductSchema, type Product, type InsertProduct } from "@shared/schema";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,19 +32,22 @@ export default function Products() {
     queryKey: ["/api/products"],
   });
 
-  const form = useForm({
+  const form = useForm<InsertProduct>({
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
       name: "",
       description: "",
-      price: 0,
+      price: "0",
       stock: 0,
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: Product) => {
-      const res = await apiRequest("POST", "/api/products", data);
+    mutationFn: async (data: InsertProduct) => {
+      const res = await apiRequest("POST", "/api/products", {
+        ...data,
+        price: data.price.toString(),
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -154,9 +157,7 @@ export default function Products() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() =>
-                          deleteMutation.mutate(product.id)
-                        }
+                        onClick={() => deleteMutation.mutate(product.id)}
                       >
                         <Trash className="h-4 w-4" />
                       </Button>
