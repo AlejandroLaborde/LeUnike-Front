@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Loader2, Pencil, Trash } from "lucide-react";
+import { Plus, Loader2, Trash } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,8 +46,13 @@ export default function Products() {
     mutationFn: async (data: InsertProduct) => {
       const res = await apiRequest("POST", "/api/products", {
         ...data,
-        price: data.price.toString(),
+        price: parseFloat(data.price), // Convert to number for API
+        stock: Number(data.stock), // Ensure stock is a number
       });
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -55,15 +60,33 @@ export default function Products() {
       toast({ title: "Product created successfully" });
       form.reset();
     },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to create product", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/products/${id}`);
+      const res = await apiRequest("DELETE", `/api/products/${id}`);
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       toast({ title: "Product deleted successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to delete product", 
+        description: error.message,
+        variant: "destructive" 
+      });
     },
   });
 
@@ -94,18 +117,27 @@ export default function Products() {
                 <div>
                   <Label htmlFor="name">Name</Label>
                   <Input {...form.register("name")} />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="description">Description</Label>
                   <Textarea {...form.register("description")} />
+                  {form.formState.errors.description && (
+                    <p className="text-sm text-red-500">{form.formState.errors.description.message}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="price">Price</Label>
                   <Input
                     type="number"
                     step="0.01"
-                    {...form.register("price", { valueAsNumber: true })}
+                    {...form.register("price")}
                   />
+                  {form.formState.errors.price && (
+                    <p className="text-sm text-red-500">{form.formState.errors.price.message}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="stock">Stock</Label>
@@ -113,6 +145,9 @@ export default function Products() {
                     type="number"
                     {...form.register("stock", { valueAsNumber: true })}
                   />
+                  {form.formState.errors.stock && (
+                    <p className="text-sm text-red-500">{form.formState.errors.stock.message}</p>
+                  )}
                 </div>
                 <Button
                   type="submit"
@@ -150,7 +185,7 @@ export default function Products() {
                 <TableRow key={product.id}>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.description}</TableCell>
-                  <TableCell>${product.price}</TableCell>
+                  <TableCell>${parseFloat(product.price).toFixed(2)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
