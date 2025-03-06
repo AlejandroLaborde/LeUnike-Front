@@ -61,7 +61,9 @@ export default function AuthPage() {
                 alt="Le Unike Logo"
                 className="h-16 w-16 rounded-full shadow-md border-2 border-primary/20 mb-3"
               />
-              <CardTitle className="text-2xl text-primary font-bold">Le Unike Admin Portal</CardTitle>
+              <CardTitle className="text-2xl text-primary font-bold">
+                Le Unike Admin Portal
+              </CardTitle>
               <CardDescription className="text-base mt-1">
                 Gestión integral de productos y ventas
               </CardDescription>
@@ -70,8 +72,12 @@ export default function AuthPage() {
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 rounded-lg">
-                <TabsTrigger value="login" className="rounded-l-lg py-2">Iniciar Sesión</TabsTrigger>
-                <TabsTrigger value="register" className="rounded-r-lg py-2">Registrarse</TabsTrigger>
+                <TabsTrigger value="login" className="rounded-l-lg py-2">
+                  Iniciar Sesión
+                </TabsTrigger>
+                <TabsTrigger value="register" className="rounded-r-lg py-2">
+                  Registrarse
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -82,15 +88,19 @@ export default function AuthPage() {
                 >
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="username" className="text-sm font-medium">Usuario</Label>
-                      <Input 
-                        {...loginForm.register("username")} 
-                        className="mt-1" 
+                      <Label htmlFor="username" className="text-sm font-medium">
+                        Usuario
+                      </Label>
+                      <Input
+                        {...loginForm.register("username")}
+                        className="mt-1"
                         placeholder="Ingrese su nombre de usuario"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        Contraseña
+                      </Label>
                       <Input
                         type="password"
                         {...loginForm.register("password")}
@@ -103,7 +113,9 @@ export default function AuthPage() {
                       className="w-full mt-2 bg-primary hover:bg-primary/90"
                       disabled={loginMutation.isPending}
                     >
-                      {loginMutation.isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
+                      {loginMutation.isPending
+                        ? "Iniciando sesión..."
+                        : "Iniciar Sesión"}
                     </Button>
                   </div>
                 </form>
@@ -117,15 +129,19 @@ export default function AuthPage() {
                 >
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="username" className="text-sm font-medium">Usuario</Label>
-                      <Input 
-                        {...registerForm.register("username")} 
-                        className="mt-1" 
+                      <Label htmlFor="username" className="text-sm font-medium">
+                        Usuario
+                      </Label>
+                      <Input
+                        {...registerForm.register("username")}
+                        className="mt-1"
                         placeholder="Cree un nombre de usuario"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        Contraseña
+                      </Label>
                       <Input
                         type="password"
                         {...registerForm.register("password")}
@@ -134,7 +150,9 @@ export default function AuthPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="role" className="text-sm font-medium">Rol</Label>
+                      <Label htmlFor="role" className="text-sm font-medium">
+                        Rol
+                      </Label>
                       <Select
                         defaultValue={registerForm.getValues("role")}
                         onValueChange={(value) =>
@@ -164,12 +182,15 @@ export default function AuthPage() {
               </TabsContent>
             </Tabs>
             <div className="mt-6 text-center text-sm text-muted-foreground">
-              <p>Le Unike © {new Date().getFullYear()} - Todos los derechos reservados</p>
+              <p>
+                Le Unike © {new Date().getFullYear()} - Todos los derechos
+                reservados
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="hidden lg:block relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 z-0"></div>
         <div className="absolute inset-0 bg-grid-white/10 bg-grid-8 z-10 opacity-30"></div>
@@ -179,12 +200,16 @@ export default function AuthPage() {
               Bienvenido a Le Unike
             </h1>
             <p className="text-lg text-gray-700 mb-6">
-              Plataforma integral para la gestión de productos, vendedores y seguimiento de ventas con integración de WhatsApp para comunicación sin interrupciones.
+              Plataforma integral para la gestión de productos, vendedores y
+              seguimiento de ventas con integración de WhatsApp para
+              comunicación sin interrupciones.
             </p>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md">
-                <h3 className="font-semibold text-primary mb-2">Gestión de Productos</h3>
+                <h3 className="font-semibold text-primary mb-2">
+                  Gestión de Productos
+                </h3>
                 <p className="text-sm text-gray-600">
                   Catálogo completo con inventario en tiempo real
                 </p>
@@ -196,7 +221,9 @@ export default function AuthPage() {
                 </p>
               </div>
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-md">
-                <h3 className="font-semibold text-primary mb-2">Chatbot WhatsApp</h3>
+                <h3 className="font-semibold text-primary mb-2">
+                  Chatbot WhatsApp
+                </h3>
                 <p className="text-sm text-gray-600">
                   Integración completa con mensajería automática
                 </p>
