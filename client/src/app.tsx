@@ -1,4 +1,3 @@
-
 import { Route, Switch } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +10,7 @@ import Customers from "@/pages/customers";
 import Orders from "@/pages/orders";
 import Reports from "@/pages/reports";
 import { AuthProvider, RequireAuth } from "@/hooks/use-auth";
+import Chat from "@/pages/chat"; // Import the Chat component
 
 const queryClient = new QueryClient();
 
@@ -50,6 +50,11 @@ function App() {
           <Route path="/reports">
             <RequireAuth>
               <Reports />
+            </RequireAuth>
+          </Route>
+          <Route path="/chat"> {/* Added route for the chat page */}
+            <RequireAuth>
+              <Chat />
             </RequireAuth>
           </Route>
         </Switch>
