@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertCustomerSchema, type Customer, type InsertCustomer } from "@shared/schema";
+import { insertCustomerSchema, type Customer, type InsertCustomer, type Vendor } from "@shared/schema";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Loader2, Pencil, Trash } from "lucide-react";
@@ -31,6 +38,10 @@ export default function Customers() {
   const { user } = useAuth();
   const { data: customers, isLoading } = useQuery<Customer[]>({
     queryKey: ["/api/customers"],
+  });
+
+  const { data: vendors } = useQuery<Vendor[]>({
+    queryKey: ["/api/vendors"],
   });
 
   const form = useForm<InsertCustomer>({
@@ -64,6 +75,30 @@ export default function Customers() {
     onError: (error: Error) => {
       toast({ 
         title: "Failed to create customer", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const assignToVendorMutation = useMutation({
+    mutationFn: async ({ customerId, vendorId }: { customerId: number; vendorId: number }) => {
+      const res = await apiRequest("POST", `/api/vendors/${vendorId}/customers`, {
+        customerId,
+      });
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/vendor-customers"] });
+      toast({ title: "Customer assigned to vendor successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to assign customer", 
         description: error.message,
         variant: "destructive" 
       });
@@ -201,7 +236,7 @@ export default function Customers() {
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
+                <TableHead className="w-[200px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -214,75 +249,117 @@ export default function Customers() {
                   <TableCell>
                     <div className="flex gap-2">
                       {user?.role === "admin" && (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(customer)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Edit Customer</DialogTitle>
-                            </DialogHeader>
-                            <form
-                              onSubmit={editForm.handleSubmit((data) =>
-                                updateMutation.mutate({ id: customer.id, data })
-                              )}
-                              className="space-y-4"
-                            >
-                              <div>
-                                <Label htmlFor="name">Name</Label>
-                                <Input {...editForm.register("name")} />
-                                {editForm.formState.errors.name && (
-                                  <p className="text-sm text-red-500">
-                                    {editForm.formState.errors.name.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input type="email" {...editForm.register("email")} />
-                                {editForm.formState.errors.email && (
-                                  <p className="text-sm text-red-500">
-                                    {editForm.formState.errors.email.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div>
-                                <Label htmlFor="phone">Phone</Label>
-                                <Input {...editForm.register("phone")} />
-                                {editForm.formState.errors.phone && (
-                                  <p className="text-sm text-red-500">
-                                    {editForm.formState.errors.phone.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div>
-                                <Label htmlFor="address">Address</Label>
-                                <Input {...editForm.register("address")} />
-                                {editForm.formState.errors.address && (
-                                  <p className="text-sm text-red-500">
-                                    {editForm.formState.errors.address.message}
-                                  </p>
-                                )}
-                              </div>
+                        <>
+                          <Dialog>
+                            <DialogTrigger asChild>
                               <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={updateMutation.isPending}
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEdit(customer)}
                               >
-                                {updateMutation.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                ) : null}
-                                Update Customer
+                                <Pencil className="h-4 w-4" />
                               </Button>
-                            </form>
-                          </DialogContent>
-                        </Dialog>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Edit Customer</DialogTitle>
+                              </DialogHeader>
+                              <form
+                                onSubmit={editForm.handleSubmit((data) =>
+                                  updateMutation.mutate({ id: customer.id, data })
+                                )}
+                                className="space-y-4"
+                              >
+                                <div>
+                                  <Label htmlFor="name">Name</Label>
+                                  <Input {...editForm.register("name")} />
+                                  {editForm.formState.errors.name && (
+                                    <p className="text-sm text-red-500">
+                                      {editForm.formState.errors.name.message}
+                                    </p>
+                                  )}
+                                </div>
+                                <div>
+                                  <Label htmlFor="email">Email</Label>
+                                  <Input type="email" {...editForm.register("email")} />
+                                  {editForm.formState.errors.email && (
+                                    <p className="text-sm text-red-500">
+                                      {editForm.formState.errors.email.message}
+                                    </p>
+                                  )}
+                                </div>
+                                <div>
+                                  <Label htmlFor="phone">Phone</Label>
+                                  <Input {...editForm.register("phone")} />
+                                  {editForm.formState.errors.phone && (
+                                    <p className="text-sm text-red-500">
+                                      {editForm.formState.errors.phone.message}
+                                    </p>
+                                  )}
+                                </div>
+                                <div>
+                                  <Label htmlFor="address">Address</Label>
+                                  <Input {...editForm.register("address")} />
+                                  {editForm.formState.errors.address && (
+                                    <p className="text-sm text-red-500">
+                                      {editForm.formState.errors.address.message}
+                                    </p>
+                                  )}
+                                </div>
+                                <Button
+                                  type="submit"
+                                  className="w-full"
+                                  disabled={updateMutation.isPending}
+                                >
+                                  {updateMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : null}
+                                  Update Customer
+                                </Button>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost">
+                                Assign to Vendor
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Assign Customer to Vendor</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 pt-4">
+                                <div>
+                                  <Label>Select Vendor</Label>
+                                  <Select
+                                    onValueChange={(vendorId) =>
+                                      assignToVendorMutation.mutate({
+                                        customerId: customer.id,
+                                        vendorId: parseInt(vendorId),
+                                      })
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select a vendor" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {vendors?.map((vendor) => (
+                                        <SelectItem
+                                          key={vendor.id}
+                                          value={vendor.id.toString()}
+                                        >
+                                          {vendor.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </>
                       )}
                       <Button
                         variant="ghost"
