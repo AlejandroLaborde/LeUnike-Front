@@ -19,7 +19,7 @@ function App() {
       <AuthProvider>
         <Toaster />
         <Switch>
-          <Route path="/" component={LandingPage} />
+          <Route path="/" component={Dashboard} />
           <Route path="/login" component={Login} />
           <Route path="/dashboard">
             <RequireAuth>

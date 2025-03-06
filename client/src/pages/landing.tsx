@@ -4,7 +4,10 @@ import { useNavigate } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 
+import { Redirect } from "wouter";
+
 export default function LandingPage() {
+  return <Redirect to="/dashboard" />;
   const { user } = useAuth();
   const navigate = useNavigate();
 
