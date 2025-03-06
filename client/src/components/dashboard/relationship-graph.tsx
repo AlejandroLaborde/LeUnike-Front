@@ -42,7 +42,11 @@ export function RelationshipGraph() {
   }
 
   if (!vendors || !customers || !relationships) {
-    return null;
+    return (
+      <div className="flex justify-center items-center h-[400px] text-muted-foreground">
+        No data available
+      </div>
+    );
   }
 
   const networkData: NetworkData = {
@@ -92,37 +96,6 @@ export function RelationshipGraph() {
         linkThickness={2}
         linkBlendMode="multiply"
         motionConfig="gentle"
-        legends={[
-          {
-            anchor: "bottom-right",
-            direction: "column",
-            translateX: -40,
-            translateY: -40,
-            itemWidth: 100,
-            itemHeight: 20,
-            itemsSpacing: 2,
-            symbolSize: 12,
-            symbolShape: "circle",
-            effects: [
-              {
-                on: "hover",
-                style: {
-                  itemTextColor: "#000",
-                },
-              },
-            ],
-            data: [
-              {
-                label: "Vendors",
-                color: "#2563eb",
-              },
-              {
-                label: "Customers",
-                color: "#16a34a",
-              },
-            ],
-          },
-        ]}
       />
     </div>
   );
