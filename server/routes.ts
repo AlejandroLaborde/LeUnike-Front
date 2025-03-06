@@ -70,6 +70,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/vendors/:id/customers", async (req, res) => {
+    // Verificar si el usuario es administrador
+    if (!req.isAuthenticated() || req.user.role !== "admin") {
+      return res.status(403).json({ error: "Only administrators can assign customers to vendors" });
+    }
+    
     const assignment = insertVendorCustomerSchema.parse({
       ...req.body,
       vendorId: parseInt(req.params.id),
@@ -79,6 +84,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/vendors/:id/customers/:customerId", async (req, res) => {
+    // Verificar si el usuario es administrador
+    if (!req.isAuthenticated() || req.user.role !== "admin") {
+      return res.status(403).json({ error: "Only administrators can unassign customers from vendors" });
+    }
+    
     await storage.unassignCustomerFromVendor(
       parseInt(req.params.id),
       parseInt(req.params.customerId)

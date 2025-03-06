@@ -320,45 +320,49 @@ export default function Customers() {
                             </DialogContent>
                           </Dialog>
 
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="ghost">
-                                Assign to Vendor
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Assign Customer to Vendor</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4 pt-4">
-                                <div>
-                                  <Label>Select Vendor</Label>
-                                  <Select
-                                    onValueChange={(vendorId) =>
-                                      assignToVendorMutation.mutate({
-                                        customerId: customer.id,
-                                        vendorId: parseInt(vendorId),
-                                      })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select a vendor" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {vendors?.map((vendor) => (
-                                        <SelectItem
-                                          key={vendor.id}
-                                          value={vendor.id.toString()}
-                                        >
-                                          {vendor.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                          {vendors && vendors.length > 0 && user?.role === "admin" && (
+                            <>
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="ghost">
+                                    Assign to Vendor
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Assign Customer to Vendor</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4 pt-4">
+                                    <div>
+                                      <Label>Select Vendor</Label>
+                                      <Select
+                                        onValueChange={(vendorId) =>
+                                          assignToVendorMutation.mutate({
+                                            customerId: customer.id,
+                                            vendorId: parseInt(vendorId),
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select a vendor" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {vendors?.map((vendor) => (
+                                            <SelectItem
+                                              key={vendor.id}
+                                              value={vendor.id.toString()}
+                                            >
+                                              {vendor.name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </>
+                          )}
                         </>
                       )}
                       <Button
