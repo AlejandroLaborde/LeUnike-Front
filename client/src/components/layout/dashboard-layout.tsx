@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   BarChart,
   LogOut,
+  UserSquare2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Products", href: "/products", icon: Package },
     { name: "Vendors", href: "/vendors", icon: Users },
+    { name: "Customers", href: "/customers", icon: UserSquare2 },
     { name: "Orders", href: "/orders", icon: ShoppingCart },
     { name: "Reports", href: "/reports", icon: BarChart },
   ];
