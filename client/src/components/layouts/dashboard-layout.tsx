@@ -32,5 +32,24 @@ const Sidebar = () => {
   );
 };
 
+// ... other components ...
+
+const Navigation = () => {
+  // ... other navigation items ...
+  return (
+    <nav>
+      <ul>
+        {/* ... other NavigationItems ... */}
+        <NavigationItem href="/reports" icon={BarChart3Icon}>
+          Reportes
+        </NavigationItem>
+        <NavigationItem href="/chat" icon={MessageSquareIcon}>
+          Chat
+        </NavigationItem>
+        {/* ... other NavigationItems ... */}
+      </ul>
+    </nav>
+  );
+};
 
 // ... rest of the code ...

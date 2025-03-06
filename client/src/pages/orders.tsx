@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -39,6 +40,7 @@ import { OrderForm } from "@/components/order/order-form";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { EyeIcon } from "@heroicons/react/24/solid";
 
 
 export default function Orders() {
@@ -155,9 +157,104 @@ export default function Orders() {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm">
-                      View Details
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                        >
+                          View Details
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                          <DialogTitle>Detalles del Pedido #{order.id}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="text-sm font-medium text-muted-foreground">Cliente</h4>
+                              <p className="text-base">{order.customerName}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-muted-foreground">Fecha</h4>
+                              <p className="text-base">{new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-muted-foreground">Estado</h4>
+                              <div className="flex items-center gap-2">
+                                <span className={`h-2 w-2 rounded-full ${
+                                  order.status === "completed" 
+                                    ? "bg-green-500" 
+                                    : order.status === "processing" 
+                                      ? "bg-blue-500" 
+                                      : "bg-yellow-500"
+                                }`}/>
+                                <span className="capitalize">{order.status}</span>
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-muted-foreground">Total</h4>
+                              <p className="text-base font-medium">${parseFloat(order.total).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-2">Productos</h4>
+                            <div className="rounded-md border">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Producto</TableHead>
+                                    <TableHead className="text-right">Cant.</TableHead>
+                                    <TableHead className="text-right">Precio</TableHead>
+                                    <TableHead className="text-right">Subtotal</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {/* Simulamos algunos items */}
+                                  <TableRow>
+                                    <TableCell>Producto {Math.floor(Math.random() * 100)}</TableCell>
+                                    <TableCell className="text-right">2</TableCell>
+                                    <TableCell className="text-right">$5,000.00</TableCell>
+                                    <TableCell className="text-right">$10,000.00</TableCell>
+                                  </TableRow>
+                                  <TableRow>
+                                    <TableCell>Producto {Math.floor(Math.random() * 100)}</TableCell>
+                                    <TableCell className="text-right">1</TableCell>
+                                    <TableCell className="text-right">$8,500.00</TableCell>
+                                    <TableCell className="text-right">$8,500.00</TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-2">Información de Envío</h4>
+                            <div className="rounded-md border p-3 bg-muted/50">
+                              <p className="text-sm">Dirección: {order.customerName} - Av. Ejemplo 123, Ciudad</p>
+                              <p className="text-sm">Método: Envío a domicilio</p>
+                              <p className="text-sm">Notas: {order.notes || "Sin notas adicionales"}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              toast({
+                                title: "Pedido actualizado",
+                                description: "El estado del pedido se ha actualizado correctamente",
+                              });
+                            }}
+                          >
+                            Actualizar Estado
+                          </Button>
+                          <Button>Imprimir Detalle</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}

@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { Send } from "lucide-react";
 
 type Message = {
   id: string;
@@ -29,184 +30,209 @@ export function ChatInterface({ customerId, customerPhone, customerName }: ChatI
   const { toast } = useToast();
   const { user } = useAuth();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const vendorPhone = "5491158100725"; // Esto debería venir de la configuración o el perfil del vendedor
 
-  // Cargar mensajes al montar el componente
+  // Simular algunos mensajes para demostración
   useEffect(() => {
-    fetchMessages();
-  }, [customerId]);
+    // Limpiar mensajes al cambiar de cliente
+    setMessages([]);
+    
+    // Simular la carga de mensajes con un pequeño retraso
+    setLoading(true);
+    const timer = setTimeout(() => {
+      const mockMessages: Message[] = [
+        {
+          id: '1',
+          from: customerPhone,
+          to: vendorPhone,
+          body: `Hola, quisiera información sobre sus productos.`,
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          isOutgoing: false
+        },
+        {
+          id: '2',
+          from: vendorPhone,
+          to: customerPhone,
+          body: `¡Hola ${customerName}! Claro, ¿en qué puedo ayudarte?`,
+          timestamp: new Date(Date.now() - 3500000).toISOString(),
+          isOutgoing: true
+        },
+        {
+          id: '3',
+          from: customerPhone,
+          to: vendorPhone,
+          body: 'Me interesa el catálogo de verano.',
+          timestamp: new Date(Date.now() - 3400000).toISOString(),
+          isOutgoing: false
+        }
+      ];
+      
+      setMessages(mockMessages);
+      setLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, [customerId, customerPhone, customerName]);
 
-  // Desplazar hacia abajo cuando llegan nuevos mensajes
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
-
+  // Función para cargar mensajes reales (implementar cuando se tenga el backend)
   const fetchMessages = async () => {
     try {
       setLoading(true);
-      // Formato esperado por el API según swagger.json
-      const response = await fetch(`/api/chats/${vendorPhone}/${customerPhone}`);
-      
-      if (!response.ok) {
-        throw new Error("Error al cargar los mensajes");
-      }
-      
-      const data = await response.json();
-      
-      // Transformar el formato de la respuesta al formato local
-      const formattedMessages = data.messages.map((msg: any) => ({
-        id: msg.id || Math.random().toString(),
-        from: msg.from,
-        to: msg.to,
-        body: msg.body,
-        timestamp: msg.timestamp || new Date().toISOString(),
-        isOutgoing: msg.from === vendorPhone,
-      }));
-      
-      setMessages(formattedMessages);
+      // Aquí iría la llamada real a la API
+      // const response = await fetch(`/api/messages?customerId=${customerId}`);
+      // const data = await response.json();
+      // setMessages(data);
+      setLoading(false);
     } catch (error) {
+      console.error("Error al cargar mensajes:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar los mensajes",
+        description: "No se pudieron cargar los mensajes. Intente nuevamente.",
         variant: "destructive",
       });
-      console.error(error);
-    } finally {
       setLoading(false);
     }
   };
 
-  const sendMessage = async () => {
+  // Función para enviar un mensaje
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!newMessage.trim()) return;
     
+    // Crear el mensaje con ID único temporal
+    const tempMessage: Message = {
+      id: Date.now().toString(),
+      from: vendorPhone,
+      to: customerPhone,
+      body: newMessage,
+      timestamp: new Date().toISOString(),
+      isOutgoing: true
+    };
+    
+    // Agregar el mensaje a la lista inmediatamente para la UX
+    setMessages(prev => [...prev, tempMessage]);
+    setNewMessage("");
+    
     try {
-      setLoading(true);
+      // Aquí iría la llamada real a la API para enviar el mensaje
+      // const response = await fetch('/api/messages', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     to: customerPhone,
+      //     body: newMessage
+      //   }),
+      // });
       
-      const messageData = {
-        from: vendorPhone,
-        to: customerPhone,
-        body: newMessage,
-        type: "text"
-      };
+      // Simular respuesta después de un tiempo
+      setTimeout(() => {
+        const response: Message = {
+          id: (Date.now() + 1).toString(),
+          from: customerPhone,
+          to: vendorPhone,
+          body: "Gracias por la información.",
+          timestamp: new Date().toISOString(),
+          isOutgoing: false
+        };
+        
+        setMessages(prev => [...prev, response]);
+      }, 3000);
       
-      const response = await fetch('/api/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(messageData)
+      // Simular éxito
+      toast({
+        title: "Mensaje enviado",
+        description: "Tu mensaje ha sido enviado correctamente.",
       });
-      
-      if (!response.ok) {
-        throw new Error("Error al enviar el mensaje");
-      }
-      
-      // Añadir el mensaje a la lista local
-      const tempMessage: Message = {
-        id: Math.random().toString(),
-        from: vendorPhone,
-        to: customerPhone,
-        body: newMessage,
-        timestamp: new Date().toISOString(),
-        isOutgoing: true
-      };
-      
-      setMessages([...messages, tempMessage]);
-      setNewMessage("");
-      
-      // Recargar mensajes para asegurar sincronización
-      setTimeout(() => fetchMessages(), 1000);
-      
     } catch (error) {
+      console.error("Error al enviar mensaje:", error);
       toast({
         title: "Error",
-        description: "No se pudo enviar el mensaje",
+        description: "No se pudo enviar el mensaje. Intente nuevamente.",
         variant: "destructive",
       });
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  // Scroll al último mensaje cuando hay nuevos mensajes
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Formatear hora del mensaje
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
-    <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-white">
-      <div className="p-3 border-b bg-primary/10 flex items-center space-x-3">
-        <Avatar>
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">
-            {customerName.charAt(0)}
+    <div className="flex flex-col h-full">
+      {/* Cabecera del chat */}
+      <div className="flex items-center p-4 border-b">
+        <Avatar className="h-10 w-10 mr-3">
+          <div className="bg-primary text-primary-foreground rounded-full h-full w-full flex items-center justify-center font-medium text-lg">
+            {customerName.charAt(0).toUpperCase()}
           </div>
         </Avatar>
         <div>
-          <h3 className="font-semibold">{customerName}</h3>
+          <h3 className="font-medium">{customerName}</h3>
           <p className="text-sm text-muted-foreground">{customerPhone}</p>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="ml-auto"
-          onClick={fetchMessages}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
-          Actualizar
-        </Button>
       </div>
       
-      <ScrollArea className="flex-1 p-3" ref={scrollAreaRef}>
-        <div className="space-y-4">
-          {messages.length === 0 && !loading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No hay mensajes. Comienza la conversación ahora.
-            </div>
-          ) : (
-            messages.map((message) => (
+      {/* Área de mensajes */}
+      <ScrollArea className="flex-1 p-4" viewportRef={scrollAreaRef}>
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <p className="text-muted-foreground">No hay mensajes aún. Envía el primero.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {messages.map((message) => (
               <div 
                 key={message.id} 
                 className={`flex ${message.isOutgoing ? 'justify-end' : 'justify-start'}`}
               >
                 <div 
-                  className={`max-w-[80%] rounded-lg py-2 px-3 ${
+                  className={`max-w-[80%] rounded-lg p-3 ${
                     message.isOutgoing 
                       ? 'bg-primary text-primary-foreground' 
                       : 'bg-muted'
                   }`}
                 >
                   <p className="break-words">{message.body}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.isOutgoing 
-                      ? 'text-primary-foreground/70' 
-                      : 'text-muted-foreground'
+                  <p className={`text-xs mt-1 text-right ${
+                    message.isOutgoing ? 'text-primary-foreground/80' : 'text-muted-foreground'
                   }`}>
-                    {new Date(message.timestamp).toLocaleTimeString()}
+                    {formatMessageTime(message.timestamp)}
                   </p>
                 </div>
               </div>
-            ))
-          )}
-          {loading && (
-            <div className="text-center py-4">
-              <div className="inline-block animate-spin rounded-full border-2 border-current border-t-transparent text-primary h-6 w-6"></div>
-            </div>
-          )}
-        </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </ScrollArea>
       
-      <div className="p-3 border-t flex gap-2">
-        <Input
-          placeholder="Escribe un mensaje..."
+      {/* Área de entrada de mensajes */}
+      <form onSubmit={sendMessage} className="p-4 border-t flex gap-2">
+        <Input 
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          disabled={loading}
+          placeholder="Escribe un mensaje..."
           className="flex-1"
         />
-        <Button onClick={sendMessage} disabled={loading || !newMessage.trim()}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
-          <span className="sr-only">Enviar</span>
+        <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+          <Send className="h-4 w-4" />
         </Button>
-      </div>
+      </form>
     </div>
   );
 }
