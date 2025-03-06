@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <div className="w-64 bg-sidebar border-r border-sidebar-border">
         <div className="h-16 flex items-center px-4 gap-2">
-          <img src="/leunike-logo.jpg" alt="Le Unike Logo" className="h-8 w-auto" />
+          <img src="/leunike-logo.jpg" alt="Le Unike Logo" className="h-10 w-auto object-contain" />
           <h1 className="text-xl font-bold text-sidebar-foreground">Le Unike Admin</h1>
         </div>
         <Separator className="bg-sidebar-border" />
