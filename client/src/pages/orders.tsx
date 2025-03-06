@@ -93,7 +93,10 @@ export default function Orders() {
           {user?.role === "vendor" && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button>Create Order</Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Order
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
