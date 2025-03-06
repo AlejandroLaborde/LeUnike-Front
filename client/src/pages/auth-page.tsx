@@ -28,7 +28,9 @@ export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
 
   const loginForm = useForm<LoginData>({
-    resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
+    resolver: zodResolver(
+      insertUserSchema.pick({ username: true, password: true }),
+    ),
     defaultValues: {
       username: "",
       password: "",
@@ -54,7 +56,11 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-3">
-              <img src="/leunike-logo.jpg" alt="Le Unike Logo" className="h-10 w-10 rounded-full" />
+              <img
+                src="public/logo-unike.jpg"
+                alt="Le Unike Logo"
+                className="h-10 w-10 rounded-full"
+              />
               <CardTitle className="text-2xl">Le Unike Admin Portal</CardTitle>
             </div>
             <CardDescription>
@@ -69,7 +75,11 @@ export default function AuthPage() {
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))}>
+                <form
+                  onSubmit={loginForm.handleSubmit((data) =>
+                    loginMutation.mutate(data),
+                  )}
+                >
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="username">Username</Label>
@@ -77,7 +87,10 @@ export default function AuthPage() {
                     </div>
                     <div>
                       <Label htmlFor="password">Password</Label>
-                      <Input type="password" {...loginForm.register("password")} />
+                      <Input
+                        type="password"
+                        {...loginForm.register("password")}
+                      />
                     </div>
                     <Button
                       type="submit"
@@ -91,7 +104,11 @@ export default function AuthPage() {
               </TabsContent>
 
               <TabsContent value="register">
-                <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))}>
+                <form
+                  onSubmit={registerForm.handleSubmit((data) =>
+                    registerMutation.mutate(data),
+                  )}
+                >
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="username">Username</Label>
@@ -99,13 +116,18 @@ export default function AuthPage() {
                     </div>
                     <div>
                       <Label htmlFor="password">Password</Label>
-                      <Input type="password" {...registerForm.register("password")} />
+                      <Input
+                        type="password"
+                        {...registerForm.register("password")}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="role">Role</Label>
-                      <Select 
+                      <Select
                         defaultValue={registerForm.getValues("role")}
-                        onValueChange={(value) => registerForm.setValue("role", value)}
+                        onValueChange={(value) =>
+                          registerForm.setValue("role", value)
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
@@ -121,7 +143,9 @@ export default function AuthPage() {
                       className="w-full"
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending ? "Creating account..." : "Create account"}
+                      {registerMutation.isPending
+                        ? "Creating account..."
+                        : "Create account"}
                     </Button>
                   </div>
                 </form>
@@ -135,9 +159,9 @@ export default function AuthPage() {
           <div className="max-w-lg">
             <h1 className="text-4xl font-bold mb-4">Welcome to Le Unike</h1>
             <p className="text-lg text-muted-foreground">
-              Your comprehensive platform for managing products, tracking sales, and
-              coordinating with vendors - all integrated with WhatsApp for seamless
-              communication.
+              Your comprehensive platform for managing products, tracking sales,
+              and coordinating with vendors - all integrated with WhatsApp for
+              seamless communication.
             </p>
           </div>
         </div>
